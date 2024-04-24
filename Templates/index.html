@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Price Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h2 {
+            text-align: center;
+            margin-top: 30px;
+            color: #333;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        input[type="number"],
+        select {
+            width: 50%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input[type="text"],
+        select {
+            width: 50%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        button[type="submit"] {
+            width: 50%;
+            padding: 5px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4caf50;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        #bengaluruFields,
+        #mumbaiFields,
+        #delhiNCRFields {
+            display: none;
+        }
+    </style>
+    <script>
+    function toggleFields() {
+    var location = document.getElementById("location").value;
+    if (location === "Bengaluru") {
+        document.getElementById("bengaluruFields").style.display = "block";
+        document.getElementById("mumbaiFields").style.display = "none";
+        document.getElementById("delhiNCRFields").style.display = "none";
+    } else if (location === "Mumbai") {
+        document.getElementById("bengaluruFields").style.display = "none";
+        document.getElementById("mumbaiFields").style.display = "block";
+        document.getElementById("delhiNCRFields").style.display = "none";
+    } else if (location === "Delhi NCR") {
+        document.getElementById("bengaluruFields").style.display = "none";
+        document.getElementById("mumbaiFields").style.display = "none";
+        document.getElementById("delhiNCRFields").style.display = "block";
+    } 
+}
+
+    </script>
+    
+    <script>
+        $(document).ready(function() {
+            $('#location').on('input', function() {
+                var userInput = $(this).val().toLowerCase();
+                if (userInput.length >= 2) {
+                    $.ajax({
+                        type: 'GET',
+                        url: '/suggest_locations',
+                        data: {input: userInput},
+                        success: function(response) {
+                            displayLocationSuggestions(response.suggestions);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                        }
+                    });
+                } else {
+                    $('#locationSuggestions').empty();
+                }
+            });
+            
+            
+
+            function displayLocationSuggestions(suggestions) {
+                var suggestionsHTML = '';
+                suggestions.forEach(function(suggestion) {
+                    suggestionsHTML += '<div>' + suggestion + '</div>';
+                });
+                $('#locationSuggestions').html(suggestionsHTML);
+            }
+            
+        });
+    </script>
+</head>
+<body>
+    <h2>Real Estate Price Prediction</h2>
+    <form id="predictionForm" action="/predict" method="post">
+    
+        
+        <div class="form-group">
+           
+            <label for="location">Location:</label>
+            <select id="location" name="location" onchange="toggleFields()" required>
+                <option value="">Select Location</option>
+                <option value="Bengaluru">Bengaluru</option>
+                <option value="Mumbai">Mumbai</option>
+                <option value="Delhi NCR">Delhi NCR</option>
+            </select>
+        </div>
+        <div id="bengaluruFields" class="form-group" style="display: none;">
+            <label for="Number of Bedrooms">Number of Bedrooms:</label>
+            <input type="number" id="Number of Bedrooms" name="Number of Bedrooms">
+            <label for="bath">Number of Bathrooms:</label>
+            <input type="number" id="bath" name="bath"><br>
+            <label for="balcony">Number of Balcony:</label>
+            <input type="number" id="balcony" name="balcony"><br>
+            <label for="location">locality:</label>
+            <input type="text" id="location" name="location">
+            <div id="locationSuggestions"></div><br>
+            <label for="Has Hall">Has Hall:</label>
+            <input type="number" id="Has Hall" name="Has Hall"><br>
+            <label for="Has Kitchen">Has Kitchen:</label>
+            <input type="number" id="Has kitchen" name="Has Kitchen"><br>
+            
+
+
+        </div>
+        <div id="mumbaiFields" class="form-group" style="display: none;">
+            <label for="sqrt">Area(Sqft):</label>
+            <input type="number" id="sqrt" name="sqrt"><br>
+            <label for="bhk">BHK:</label>
+            <input type="number" id="bhk" name="bhk"><br>
+            <label for="Gymnasium">Gymnasium:</label>
+            <select id="Gymnasium" name="Gymnasium">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select><br>
+            <label for="lift_available">Lift Available:</label>
+            <select id="lift_available" name="lift_available">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select><br>
+            <label for="car_parking">Car Parking:</label>
+            <select id="car_parking" name="car_parking">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select><br>
+            <label for="maintenance_staff">Maintenance Staff:</label>
+            <select id="maintenance_staff" name="maintenance_staff">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select><br>
+            <label for="24x7_security">24x7 Security:</label>
+            <select id="24x7_security" name="24x7_security">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select><br>
+            <label for="clubhouse">Clubhouse:</label>
+            <select id="clubhouse" name="clubhouse">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select><br>
+            <label for="intercom">Intercom:</label>
+            <select id="intercom" name="intercom">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select><br>
+            <label for="landscaped_gardens">Landscaped Gardens:</label>
+            <select id="landscaped_gardens" name="landscaped_gardens">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select><br>
+            <label for="indoor_games">Indoor Games:</label>
+            <select id="indoor_games" name="indoor_games">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select><br>
+            <label for="gas_connection">Gas Connection:</label>
+            <select id="gas_connection" name="gas_connection">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select><br>
+            <label for="jogging_track">Jogging Track:</label>
+            <select id="jogging_track" name="jogging_track">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select><br>
+            <label for="swimming_pool">Swimming Pool:</label>
+            <select id="swimming_pool" name="swimming_pool">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select><br>
+            
+
+        </div>
+        <div id="delhiNCRFields" class="form-group" style="display: none;">
+            <label for="Area">Area(sqft):</label>
+            <input type="number" id="Area" name="Area"><br>
+            <label for="BHK">BHK:</label>
+            <input type="number" id="BHK" name="BHK"><br>
+            <label for="Bathroom">Number of Bathrooms:</label>
+            <input type="number" id="Bathroom" name="Bathroom"><br>
+            <label for="Parking">Parking:</label>
+            <input type="number" id="Parking" name="Parking"><br>
+        </div>
+        <button type="submit">Predict Price :{{data}}</button>
+    </form>
+</body>
+</html>
